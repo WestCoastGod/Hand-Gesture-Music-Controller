@@ -14,7 +14,7 @@ OSCdef.new(
         if (mode == 0) {
             freq = recive_num;
         } {
-            freq = (440 * (2 ** ((recive_num - 69) / 12))); // Convert Midinote number to freq
+			freq = (440 * (2 ** ((recive_num - 69) / 12))); // Convert Midinote number to freq
         };
         // Print the received frequency value for debugging
         ("Changing frequency to: " + freq).postln;
@@ -70,4 +70,5 @@ SynthDef(\handflute, {
 }).add;
 
 // Boot the server
+Server.default.options.numInputBusChannels=0;
 s.boot();
