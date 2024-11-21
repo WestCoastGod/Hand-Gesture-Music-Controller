@@ -106,3 +106,12 @@ working...
    - 可以疊加音軌，不同手勢啟動不同音軌（drum）。手的高度控制音軌速度或者頻率，然後用一個手勢來確定。
 
 5. Further implementation. If hand can control it, voice can also can as it is the same principle as recognition.
+
+6. DJ remix electronic dancing music, add different tracks together.
+
+7. Presentation: Introducetion; Methodology; Demo; Limitation; Future Plan;
+
+8. 分工：
+   - **Barry**: GUI, change `tkinter` to `PyGame`
+   - **Felix**: Hand Gesture, add hand gestures and replace all the keys, e.g. `m` for mode, `s` for reset position, `z` for play. Add tracks (e.g. drum, chord, etc) and control tracks by using hand gestures, imitate DJ remix.
+   - **Oscar**: Machine Learning, real-time instrumental sound synthesis. (Give up if too complex). Use hand gesture to open microphone for sound record, and then use the recording to generate timbre. Research DJ remix.
