@@ -22,7 +22,7 @@ client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
 script_dir = os.path.dirname(os.path.abspath(__file__))
 model_file_path = os.path.join(script_dir, "gesture_model.pkl")
 model = joblib.load(model_file_path)
-gestures = ["fist", "open_hand"]
+gestures = ["Fist", "Open Hand"]
 warnings.simplefilter("ignore")
 
 
@@ -47,41 +47,43 @@ class HandGestureApp:
         self.video_frame.pack(side=tk.LEFT, padx=10)
 
         self.info_frame = ttk.Frame(root)
-        self.info_frame.pack(side=tk.RIGHT, padx=10)
+        self.info_frame.pack(side=tk.RIGHT, padx=10, anchor="w")
 
         self.mode_label = ttk.Label(self.info_frame, text=f"Mode: {mode_id[self.mode]}")
-        self.mode_label.pack(pady=5)
+        self.mode_label.pack(pady=5, anchor="w")
 
         self.instrument_label = ttk.Label(
             self.info_frame, text=f"Instrument: {instrument[self.instrument_id]}"
         )
-        self.instrument_label.pack(pady=5)
+        self.instrument_label.pack(pady=5, anchor="w")
 
         self.frequency_label = ttk.Label(self.info_frame, text="Frequency: N/A")
-        self.frequency_label.pack(pady=5)
+        self.frequency_label.pack(pady=5, anchor="w")
 
         self.gesture_label = ttk.Label(self.info_frame, text="Gesture: N/A")
-        self.gesture_label.pack(pady=5)
+        self.gesture_label.pack(pady=5, anchor="w")
 
         self.mode_button = ttk.Button(
             self.info_frame, text="Change Mode", command=self.change_mode
         )
-        self.mode_button.pack(pady=5)
+        self.mode_button.pack(pady=5, anchor="w")
 
         self.instrument_button = ttk.Button(
             self.info_frame, text="Change Instrument", command=self.change_instrument
         )
-        self.instrument_button.pack(pady=5)
+        self.instrument_button.pack(pady=5, anchor="w")
 
         self.reset_button = ttk.Button(
             self.info_frame, text="Reset Position", command=self.reset_position
         )
-        self.reset_button.pack(pady=5)
+        self.reset_button.pack(pady=5, anchor="w")
 
         self.video_label = ttk.Label(self.video_frame)
         self.video_label.pack()
 
-        self.cap = cv2.VideoCapture(1)
+        self.cap = cv2.VideoCapture(0)  # 0 for default camera
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # Set the width
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # Set the height
         self.mp_hands = mp.solutions.hands
         self.mp_drawing = mp.solutions.drawing_utils
 
@@ -173,7 +175,8 @@ class HandGestureApp:
                         if not keyboard.is_pressed("z"):
                             self.key_pressed = False
 
-        img = Image.fromarray(rgb_frame)
+        # Convert the frame with landmarks to an image and display it
+        img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         imgtk = ImageTk.PhotoImage(image=img)
         self.video_label.imgtk = imgtk
         self.video_label.configure(image=imgtk)

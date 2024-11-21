@@ -4,8 +4,6 @@ import os
 import joblib
 import numpy as np
 from pythonosc import udp_client
-import keyboard
-import time
 import warnings
 
 # Global variables
@@ -43,7 +41,7 @@ def detect_hand_gesture(mode=0, midinote=81):
     key_pressed = False
     instrument_id = 0
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     with mp_hands.Hands(
         max_num_hands=1, min_detection_confidence=0.7, min_tracking_confidence=0.7
     ) as hands:
@@ -65,7 +63,7 @@ def detect_hand_gesture(mode=0, midinote=81):
                 (255, 255, 0),
             )
 
-            key = cv2.waitKey(respond_time) & 0xFF
+            key = cv2.waitKey(1) & 0xFF
             if key == ord("m"):
                 mode = (mode + 1) % len(mode_id)
                 init = False
@@ -110,7 +108,7 @@ def detect_hand_gesture(mode=0, midinote=81):
                             (10, 60),
                             (0, 255, 0),
                         )
-                        if keyboard.is_pressed("s"):
+                        if key == ord("s"):
                             mcp_y = middle_mcp.y
                             print("Position reset")
                             init = True
@@ -122,11 +120,11 @@ def detect_hand_gesture(mode=0, midinote=81):
                                 mcp_y = middle_mcp.y
                         if gesture_text == "fist":
                             sound_synth(0, mode, instrument_id)
-                        elif keyboard.is_pressed("z"):
+                        elif key == ord("z"):
                             if not key_pressed:
                                 sound_synth(midinote, mode, instrument_id)
                                 key_pressed = True
-                        if not keyboard.is_pressed("z"):
+                        if key != ord("z"):
                             key_pressed = False
 
             cv2.imshow("Hand Gesture Recognition", frame)
