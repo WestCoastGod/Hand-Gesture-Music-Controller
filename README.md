@@ -4,7 +4,7 @@
 
 ### Running the program
 
-1. Open `sound_syn.scd` in SuperCollider.
+1. Open `mode_0_1_sound_syn.scd` and `mode_2_sound_syn.scd` in SuperCollider.
 2. Boot the server, can use `ctrl/cmd + B`.
 3. Evaluate file or session, can use `ctrl/cmd + enter`.
 4. Open a terminal and navigate to the directory containing `terminal_version.py`</mark>`.
@@ -18,7 +18,8 @@
 ### Modes
 
 - **Frequency Mode**: The frequency of the sound is controlled by the vertical position of your hand.
-- **Discrete Midi Mode**: The MIDI note number is controlled by the vertical position of your hand. **_Remember to press `s` to reset position first_**.
+- **Discrete Midi Mode**: The MIDI note number is controlled by the vertical position of your hand. **_Remember to touch thumb and middle thinger to reset position first_**.
+- **Track Overlay Mode**: Holding hand gesture "One" to start a recording. Release the hand gesture "One". The recording will be played repeadingly and further tracks can be added.
 
 ### Instruments
 
@@ -29,67 +30,26 @@
 
 - Press `m` to switch between Frequency Mode and Discrete Midi Mode.
 - Press `i` to switch between instruments.
-- Press `s` to reset the position for MIDI note calculation.
-- Press `z` to play the sound based on the detected gesture.
+- Touch thumb and middle thinger to reset the position for MIDI note calculation.
+- Touch thumb and index finger to play the sound based on the detected gesture.
 - Press `q` to quit the program.
 
 ### Gestures
 
 - `Fist`: Plays a sound with frequency 0 or stops the sound.
 - `Open Hand`: Plays a sound based on the current mode and hand position.
+- `One`: Starts a recording in Track Overlay Mode.
 
 ### Example Usage
 
 1. Start the program.
 2. Press `m` to switch to Discrete Midi Mode.
-3. Press `s` to reset position.
+3. Touch thumb and middle finger to reset position.
 4. Press `i` to switch to Hand flute.
 5. Make a fist to stop the sound.
 6. Open your hand and move it up or down to change the MIDI note.
-7. Press `z` to play the sound.
+7. Touch thumb and index finger to play the sound.
 8. Press `q` to quit the program.
-
-## GUI Version
-
-### Running the program
-
-1. Open `sound_syn.scd` in SuperCollider.
-2. Boot the server, can use `ctrl/cmd + B`.
-3. Evaluate file or session, can use `ctrl/cmd + enter`.
-4. Open a terminal and navigate to the directory containing `gui_version.py`</mark>`.
-5. Run the script.
-
-### Using the Program
-
-- The program will open a GUI window with the title "Hand Gesture Music Controller".
-- The GUI will display the video feed from your webcam and information about the current mode and instrument.
-
-### Modes
-
-- **Frequency Mode**: The frequency of the sound is controlled by the vertical position of your hand.
-- **Discrete Midi Mode**: The MIDI note number is controlled by the vertical position of your hand. **_Remember to press `s` to reset position first_**.
-
-### Instruments
-
-- **Sine oscillator**
-- **Hand flute**
-
-### Controls
-
-- Click `Change Mode` button to switch between Frequency Mode and Discrete Midi Mode.
-- Click `Change Instrument` button to switch between instruments.
-- Click `Reset Position` button to reset the position for MIDI note calculation.
-- Click top right cross button to close window.
-- working...
-
-### Gestures
-
-- `Fist`: Plays a sound with frequency 0 or stops the sound.
-- `Open Hand`: Plays a sound based on the current mode and hand position.
-
-### Example Usage
-
-working...
 
 # Log
 
@@ -112,6 +72,11 @@ working...
 7. Presentation: Introducetion; Methodology; Demo; Limitation; Future Plan;
 
 8. 分工：
+
    - **Barry**: GUI, change `tkinter` to `PyGame`
    - **Felix**: Hand Gesture, add hand gestures and replace all the keys, e.g. `m` for mode, `s` for reset position, `z` for play. Add tracks (e.g. drum, chord, etc) and control tracks by using hand gestures, imitate DJ remix.
    - **Oscar**: Machine Learning, real-time instrumental sound synthesis. (Give up if too complex). Use hand gesture to open microphone for sound record, and then use the recording to generate timbre. Research DJ remix.
+
+9. Timbre Synthesis: We have MFCCs, amplitude ratio of harmonics, C:M ratio. MFCCs is generally better for timbre synthesis. While we can use FM synthesis to modify the timbre.
+
+10. ok, it seems that the timbre features after machine learning are in a large numbers that is not easy to be input to SuperCollider for generating music. So I am thinking changing the direction to windowing a short recording and keep playing it in SuperCollider to make music using that certain sound.
