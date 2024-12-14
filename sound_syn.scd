@@ -24,8 +24,12 @@ OSCdef.new(
         if (~currentSynth.isNil) {
             if (instrument_id == 0) {
                 ~currentSynth = Synth(\sineWave, [\freq, freq]); // Sine Oscillator
-            } {
+            };
+			if (instrument_id == 1) {
                 ~currentSynth = Synth(\handflute, [\freq, freq]); // Hand Flute
+            };
+			if (instrument_id == 2) {
+                ~currentSynth = Synth(\drum, [\freq, freq]); // Hand Flute
             };
         } {
             // Update the frequency of the existing Synth
@@ -52,8 +56,9 @@ SynthDef(\sineWave, { |freq = 440, amp = 0.5|
     Out.ar(0, sig ! 2);
 }).add;
 
-// Create a buffer for the audio file
-~buffer = Buffer.read(s, "/Users/oscarzhang/Desktop/AIST2010_Proj_V8/music_source/hand_flute.wav");
+// Create buffers for the audio files
+~buffer1 = Buffer.read(s, "music_source/hand_flute.wav");
+~buffer2 = Buffer.read(s, "music_source/drum.wav");
 
 SynthDef(\handflute, {
     |out = 0, freq = 880, originalFreq = 830.61, amp = 0.5|
@@ -64,7 +69,22 @@ SynthDef(\handflute, {
     playbackRate = freq / originalFreq;
 
     // Play the recorded audio with the calculated playback rate
-    signal = PlayBuf.ar(1, ~buffer.bufnum, rate: playbackRate, loop: 1);
+    signal = PlayBuf.ar(1, ~buffer1.bufnum, rate: playbackRate, loop: 1);
+
+    // Output the sound with volume control
+    Out.ar(out, signal * amp ! 2);
+}).add;
+
+SynthDef(\drum, {
+    |out = 0, freq = 880, originalFreq = 830.61, amp = 0.5|
+
+    var playbackRate, signal;
+
+    // Calculate the playback rate to change the frequency from originalFreq to targetFreq
+    playbackRate = freq / originalFreq;
+
+    // Play the recorded audio with the calculated playback rate
+    signal = PlayBuf.ar(1, ~buffer2.bufnum, rate: playbackRate, loop: 1);
 
     // Output the sound with volume control
     Out.ar(out, signal * amp ! 2);
@@ -121,5 +141,5 @@ OSCdef.new(
             ~stopLastRecording.value;
         }
     },
-    '/stop_recording'  // OSC address to listen for
+    '/stop_recording'
 );

@@ -19,7 +19,7 @@ pygame.init()
 window_width = 1000
 window_height = 500
 window = pygame.display.set_mode((window_width, window_height))
-pygame.display.set_caption("Hand Gesture Detection")
+pygame.display.set_caption("Computer Vision Sound Synthesizer")
 
 # Set up fonts
 font = pygame.font.Font(None, 36)
@@ -28,7 +28,7 @@ font = pygame.font.Font(None, 36)
 midi_interval = 0.05  # Value of y to increase / decrease 1 midinote
 respond_time = 1
 mode_id = ["Frequency Mode", "Discrete Midi Mode", "Composing Mode"]
-instrument = ["Sine oscillator", "Hand flute"]
+instrument = ["Sine Oscillator", "Hand Flute", "Drum"]
 
 # Initialize the OSC client
 client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
@@ -48,8 +48,8 @@ def sound_synth(midi_freq, mode, instrument_id):
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 model_file_path = os.path.join(
-    script_dir, "/Users/oscarzhang/Desktop/AIST2010_Proj_V8/gesture_model.pkl"
-)
+    script_dir, "/gesture_model.pkl"
+)  # Change the path to the model file
 model = joblib.load(model_file_path)
 gestures = [
     "Open Hand",
@@ -108,7 +108,7 @@ def detect_hand_gesture(mode=0, midinote=69):
     recording = False
     recording_start_time = None
     recording_file_path = None
-    gesture_text = "No Gesture"  # Initialize gesture_text with a default value
+    gesture_text = "No Hands"  # Initialize gesture_text with a default value
     freq = 0  # Initialize freq with a default value
     recordings = 0
 
@@ -263,16 +263,24 @@ def detect_hand_gesture(mode=0, midinote=69):
                         sd.stop()
                         recording_duration = time.time() - recording_start_time
                         print(f"Recording stopped: {recording_file_path}")
-                        recordings += 1
 
-                        wv.write(
-                            recording_file_path,
-                            recording_data[: int((recording_duration - 0.5) * 44100)],
-                            44100,
-                            sampwidth=2,
-                        )
-                        time.sleep(0.5)
-                        client.send_message("/playfile", recording_file_path)
+                        if recording_duration < 0.5:
+                            print("Recording too short, discarding...")
+                            continue
+
+                        else:
+                            recordings += 1
+
+                            wv.write(
+                                recording_file_path,
+                                recording_data[
+                                    : int((recording_duration - 0.5) * 44100)
+                                ],
+                                44100,
+                                sampwidth=2,
+                            )
+                            time.sleep(0.5)
+                            client.send_message("/playfile", recording_file_path)
 
                     elif gesture_text == "Fist" and not fist_processing:
                         sound_synth(0, mode, instrument_id)
@@ -282,10 +290,11 @@ def detect_hand_gesture(mode=0, midinote=69):
                     elif gesture_text != "Fist":
                         fist_processing = False
 
-            else:  # No hands detected
+            else:  # If no hands are detected
                 gesture_text = "No Hands"
-                sound_synth(0, mode, instrument_id)
-                fist_processed = False
+                if mode != 2:
+                    sound_synth(0, mode, instrument_id)
+                    fist_processing = False
 
             # Convert the frame to RGB (PyGame uses RGB, OpenCV uses BGR)
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -301,11 +310,11 @@ def detect_hand_gesture(mode=0, midinote=69):
             # Display the title at the top
             display_text_pygame(
                 window,
-                "Hand Gesture Detection",
-                (window_width // 2 - 225, 25),
+                "Computer Vision Sound Synthesizer",
+                (window_width // 2 - 315, 25),
                 (0, 0, 0),
-                font_name="Comic Sans MS",  # Specify the font name
-                font_size=40,  # Specify the font size
+                font_name="Comic Sans MS",
+                font_size=40,
             )
 
             # Display the video frame on the left-hand side
@@ -317,33 +326,33 @@ def detect_hand_gesture(mode=0, midinote=69):
             mode_button = create_button(
                 window,
                 "Mode",
-                (button_x, 100),
+                (button_x, 290),
                 (200, 50),
                 (0, 128, 255),
             )
             instrument_button = create_button(
                 window,
                 "Instrument",
-                (button_x, 160),
+                (button_x, 350),
                 (200, 50),
                 (0, 128, 255),
             )
             quit_button = create_button(
-                window, "Quit", (button_x, 220), (200, 50), (255, 0, 0)
+                window, "Quit", (button_x, 410), (200, 50), (255, 0, 0)
             )
 
             # Display texts on the right-hand side
             display_text_pygame(
                 window,
                 f"Mode: {mode_id[mode]}",
-                (button_x, 300),
+                (button_x, 110),
                 (0, 0, 0),
             )
 
             display_text_pygame(
                 window,
                 f"Gesture: {gesture_text}",
-                (button_x, 380),
+                (button_x, 190),
                 (0, 0, 0),
             )
 
@@ -351,13 +360,13 @@ def detect_hand_gesture(mode=0, midinote=69):
                 display_text_pygame(
                     window,
                     f"Instrument: {instrument[instrument_id]}",
-                    (button_x, 340),
+                    (button_x, 150),
                     (0, 0, 0),
                 )
                 display_text_pygame(
                     window,
-                    f"Frequency: {0 if gesture_text == 'Fist' else freq:.0f}Hz",
-                    (button_x, 420),
+                    f"Frequency: {0 if (gesture_text == 'Fist' or gesture_text == 'No Hands') else freq:.0f}Hz",
+                    (button_x, 230),
                     (0, 0, 0),
                 )
 
@@ -365,13 +374,13 @@ def detect_hand_gesture(mode=0, midinote=69):
                 display_text_pygame(
                     window,
                     f"Instrument: {instrument[instrument_id]}",
-                    (button_x, 340),
+                    (button_x, 150),
                     (0, 0, 0),
                 )
                 display_text_pygame(
                     window,
                     f"MIDI Note Number: {midinote}",
-                    (button_x, 420),
+                    (button_x, 230),
                     (0, 0, 0),
                 )
 
@@ -379,7 +388,7 @@ def detect_hand_gesture(mode=0, midinote=69):
                 display_text_pygame(
                     window,
                     f"Recordings: {recordings}",
-                    (button_x, 340),
+                    (button_x, 150),
                     (0, 0, 0),
                 )
 
@@ -391,4 +400,4 @@ def detect_hand_gesture(mode=0, midinote=69):
     pygame.quit()
 
 
-detect_hand_gesture(0, 69)
+# detect_hand_gesture(0, 69)
