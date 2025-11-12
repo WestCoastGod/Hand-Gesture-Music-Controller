@@ -1,3 +1,11 @@
+# Demo
+
+<p align="left">
+<a href="https://youtu.be/XqlvKODpXaI"><img width="500" src="demo.png" alt="Demo Video"></a>
+</p>
+
+***Click image above to watch full demonstration video***
+
 # Guide for Using
 
 ### Running the program
